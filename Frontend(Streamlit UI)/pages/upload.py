@@ -1,94 +1,133 @@
-import streamlit as st
-import requests
+import time
+
 import pandas as pd
-import io
+import requests
+import streamlit as st
 
-# ⬇ Load CSS
-def load_css():
-    with open("static/style.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+from config import BACKEND_URL, REQUEST_TIMEOUT
 
-API_URL = "http://127.0.0.1:5000"
+MAX_UPLOAD_BYTES = 16 * 1024 * 1024  # keep in sync with backend MAX_CONTENT_LENGTH
+
+
+
+def _read_preview(uploaded_file):
+    uploaded_file.seek(0)
+    lower_name = uploaded_file.name.lower()
+    if lower_name.endswith(".csv"):
+        return pd.read_csv(uploaded_file)
+    if lower_name.endswith(".xlsx"):
+        return pd.read_excel(uploaded_file)
+    if lower_name.endswith(".json"):
+        return pd.read_json(uploaded_file)
+    raise ValueError("Unsupported file type.")
+
+
+def _error_message(response, fallback):
+    try:
+        error = response.json().get("error", fallback)
+        if isinstance(error, dict):
+            return error.get("message", fallback)
+        return error
+    except ValueError:
+        return fallback
+
+
+def _request_with_retry(method, url, *, headers=None, files=None, params=None, json=None, timeout=REQUEST_TIMEOUT, max_attempts=3):
+    """Small retry wrapper for transient errors."""
+    session = requests.Session()
+    last_exc = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            resp = session.request(
+                method,
+                url,
+                headers=headers,
+                files=files,
+                params=params,
+                json=json,
+                timeout=timeout,
+            )
+            if resp.status_code in (429, 500, 502, 503, 504):
+                # retryable
+                retry_after = resp.headers.get("Retry-After")
+                sleep_s = float(retry_after) if retry_after and retry_after.isdigit() else min(2 ** (attempt - 1), 8)
+                time.sleep(sleep_s)
+                continue
+            return resp
+        except requests.exceptions.RequestException as exc:
+            last_exc = exc
+            time.sleep(min(2 ** (attempt - 1), 8))
+    # If we exhausted attempts
+    if last_exc:
+        raise last_exc
+    raise requests.exceptions.RequestException("Request failed after retries")
+
 
 def show_upload_page():
-    """Streamlit page to upload files."""
-    st.title("📤 Upload File")
+    st.markdown("<div style='font-size:2rem;font-weight:800;margin-top:6px' class='page-vibrant-title'>Upload File</div>", unsafe_allow_html=True)
 
-    # ✅ Ensure user is logged in
+    st.caption("Preview a CSV, Excel, or JSON file before storing it.")
+
     auth_token = st.session_state.get("auth_token")
-    user_email = st.session_state.get("user_email")
-
-    if not auth_token or not user_email:
-        st.error("⚠️ Please log in first!")
+    if not auth_token:
+        st.error("Please log in first.")
         st.stop()
 
-    uploaded_file = st.file_uploader("📂 Choose a file:", type=["csv", "xlsx", "json"])
+    uploaded_file = st.file_uploader("Choose a file", type=["csv", "xlsx", "json"])
+    if uploaded_file is None:
+        st.info("Supported formats: CSV, XLSX, JSON.")
+        return
 
-    if uploaded_file:
-        st.success(f"✅ File `{uploaded_file.name}` selected!")
+    file_size = getattr(uploaded_file, "size", None)
+    if file_size is not None and file_size > MAX_UPLOAD_BYTES:
+        st.error(f"File is too large. Max allowed size is 16MB (your file: {file_size/1024/1024:.2f}MB).")
+        return
 
+
+    with st.spinner("Reading file preview..."):
         try:
-            # ✅ Load file based on extension
-            if uploaded_file.name.endswith(".csv"):
-                df = pd.read_csv(uploaded_file)
-            elif uploaded_file.name.endswith(".xlsx"):
-                df = pd.read_excel(uploaded_file)
-            elif uploaded_file.name.endswith(".json"):
-                df = pd.read_json(uploaded_file)
-            else:
-                st.warning("⚠️ Unsupported file type.")
-                return
-
-            # ✅ Save preview and columns in session
-            st.session_state["uploaded_df"] = df
-            st.session_state["uploaded_columns"] = list(df.columns)
-
-            # ✅ Show file preview
-            with st.expander("🔍 Preview File"):
-                st.dataframe(df.head())
-
-        except Exception as e:
-            st.error(f"❌ Failed to preview file: {e}")
+            df = _read_preview(uploaded_file)
+        except Exception as exc:
+            st.error(f"Failed to preview file: {exc}")
             return
 
-        # ✅ Upload button
-        if st.button("🚀 Upload File"):
-            with st.spinner("📡 Uploading file..."):
-                try:
-                    file_data = uploaded_file.getvalue()
-                    if not file_data:
-                        st.error("❌ File is empty. Please upload a valid file.")
-                        return
 
-                    files = {"file": (uploaded_file.name, file_data)}
-                    headers = {"Authorization": f"Bearer {auth_token}"}
-                    data = {"email": user_email}
+    st.success(f"Selected `{uploaded_file.name}` with {len(df)} rows and {len(df.columns)} columns.")
+    with st.expander("Preview", expanded=True):
+        st.dataframe(df.head(25), use_container_width=True)
 
-                    response = requests.post(f"{API_URL}/upload", files=files, data=data, headers=headers)
+    left, right = st.columns([2, 1])
+    with left:
+        st.write("Columns")
+        st.write(list(df.columns))
+    with right:
+        upload_clicked = st.button("Upload File", use_container_width=True)
 
-                    if response.status_code == 201:
-                        st.success("✅ File uploaded successfully!")
+    if not upload_clicked:
+        return
 
-                        # ✅ Show stored column names
-                        if "uploaded_columns" in st.session_state:
-                            st.subheader("🧾 Columns in Uploaded File:")
-                            st.write(st.session_state["uploaded_columns"])
+    with st.spinner("Uploading file..."):
+        try:
+            uploaded_file.seek(0)
+            files = {"file": (uploaded_file.name, uploaded_file.getvalue())}
+            headers = {"Authorization": f"Bearer {auth_token}"}
+            response = _request_with_retry(
+                "POST",
+                f"{BACKEND_URL}/upload",
+                headers=headers,
+                files=files,
+                timeout=REQUEST_TIMEOUT,
+            )
+        except requests.exceptions.RequestException as exc:
+            st.error(f"Upload failed (network). Could not reach backend: {exc}")
+            return
 
-                    elif response.status_code == 401:
-                        st.warning("⚠️ Session expired. Please log in again.")
-                        st.session_state.clear()
-                        st.rerun()
-                    else:
-                        try:
-                            error_message = response.json().get("error", "Unknown error")
-                        except requests.exceptions.JSONDecodeError:
-                            error_message = f"Unexpected response: {response.text}"
 
-                        st.error(f"❌ Upload failed: {error_message}")
-
-                except requests.exceptions.RequestException as e:
-                    st.error(f"❌ Network error: {str(e)}")
-
-# ✅ Run function
-if __name__ == "__main__":
-    show_upload_page()
+    if response.status_code == 201:
+        st.success("File uploaded successfully.")
+    elif response.status_code == 401:
+        st.warning("Session expired. Please log in again.")
+        st.session_state.clear()
+        st.rerun()
+    else:
+        st.error(_error_message(response, "Upload failed."))

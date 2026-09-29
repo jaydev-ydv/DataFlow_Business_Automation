@@ -1,0 +1,10 @@
+Single-database migration repository for Flask-Migrate/Alembic.
+
+Common commands:
+
+  cd "Backend(Flask ApI)"
+  flask --app app db upgrade
+  flask --app app db migrate -m "describe change"
+
+For an existing database that already has the current tables but no
+alembic_version table, run `flask db stamp head` after verifying the schema.

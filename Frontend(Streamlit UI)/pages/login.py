@@ -1,38 +1,89 @@
 import requests
 import streamlit as st
 
-# ⬇ Load CSS
-def load_css():
-    with open("static/style.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+from config import BACKEND_URL, REQUEST_TIMEOUT
 
-BACKEND_URL = "http://127.0.0.1:5000"
+
+def _error_message(response, fallback):
+    try:
+        error = response.json().get("error", fallback)
+        if isinstance(error, dict):
+            return error.get("message", fallback)
+        return error
+    except ValueError:
+        return fallback
+
 
 def show_login_page():
-    st.title("🔐 Login")
+    st.markdown('<div class="auth-wrapper">', unsafe_allow_html=True)
 
-    email = st.text_input("📧 Email")
-    password = st.text_input("🔑 Password", type="password")
+    st.markdown(
+        """
+        <section class="auth-header-centered">
+            <p class="eyebrow">Welcome back</p>
+            <h1>Login to your workspace</h1>
+            <p>
+                Access your uploaded files, history, and visualizations.
+            </p>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    if st.button("Login"):
-        if not email or not password:
-            st.warning("⚠️ Please enter email and password.")
-            return
+    _, form_col, _ = st.columns([1, 1.8, 1])
 
-        response = requests.post(f"{BACKEND_URL}/login", json={"email": email, "password": password})
+    with form_col:
+        st.markdown('<div class="auth-form-title">Account Access</div>', unsafe_allow_html=True)
+        with st.form("login_form"):
+            email = st.text_input(
+                "Email address",
+                placeholder="Enter your registered email, e.g. alex@company.com",
+            )
+            password = st.text_input(
+                "Password",
+                type="password",
+                placeholder="Enter your account password",
+            )
+            submitted = st.form_submit_button("Login", use_container_width=True)
 
-        if response.status_code == 200:
-            data = response.json()
+        st.markdown(
+            """
+            <div style="text-align: center; margin-top: 1.25rem;">
+                <span style="color: var(--ink); font-size: 0.95rem; font-weight: 500;">
+                    New here? Open <strong style="color: #1f6feb; font-weight: 700;">Signup</strong> from the sidebar.
+                </span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-            # ✅ Store user session properly
-            st.session_state["auth_token"] = data["token"]
-            st.session_state["user_id"] = data["user"]["id"]
-            st.session_state["user_email"] = data["user"]["email"]  # ✅ Fix: store email too
-            st.session_state["user_name"] = data["user"].get("full_name", "User")
-            st.session_state["is_logged_in"] = True  # ✅ New session flag
+    st.markdown('</div>', unsafe_allow_html=True)
 
-            st.success("✅ Login successful! Redirecting...")
-            st.rerun()  # ✅ Force page refresh to apply session
+    if not submitted:
+        return
 
-        else:
-            st.error(response.json().get("error", "❌ Invalid email or password!"))
+    if not email or not password:
+        st.warning("Please enter email and password.")
+        return
+
+    try:
+        response = requests.post(
+            f"{BACKEND_URL}/login",
+            json={"email": email.strip(), "password": password},
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as exc:
+        st.error(f"Could not reach backend: {exc}")
+        return
+
+    if response.status_code == 200:
+        response_data = response.json()
+        data = response_data.get("data", response_data)
+        st.session_state["auth_token"] = data["token"]
+        st.session_state["user_id"] = data["user"]["id"]
+        st.session_state["user_email"] = data["user"]["email"]
+        st.session_state["user_name"] = data["user"].get("full_name", "User")
+        st.success("Login successful.")
+        st.rerun()
+    else:
+        st.error(_error_message(response, "Invalid email or password."))

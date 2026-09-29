@@ -1,86 +1,223 @@
+from pathlib import Path
+
 import streamlit as st
+
+from pages.history import show_history_page
 from pages.login import show_login_page
+from pages.process_visual import show_process_visual_page
 from pages.signup import show_signup_page
 from pages.upload import show_upload_page
-from pages.history import show_history_page
-from pages.process_visual import show_process_visual_page  # 🆕
 
 
-# ⬇️ Load CSS
+AUTH_PAGES = ["Login", "Signup"]
+WORKSPACE_PAGES = ["Home", "Upload File", "Recent Files", "Process & Visualize"]
+
+
 def load_css():
-    with open("static/style.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    css_path = Path(__file__).parent / "static" / "style.css"
+    if css_path.exists():
+        st.markdown(f"<style>{css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
 
 
-st.set_page_config(page_title="Business Data Entry Automation", layout="wide")
-load_css()  # Apply the custom CSS
+def apply_dark_mode(dark_mode: bool):
+    # Minimal overrides; Streamlit theme is controlled by its own settings.
+    if not dark_mode:
+        return
 
-# Sidebar Navigation
-st.sidebar.title("📁 Business Automation")
-page = st.sidebar.radio("Navigate", [
-    "Home", "Login", "Signup", "Upload File",
-    "Recent Files", "Process & Visualize"  # 🆕
-])
+    st.markdown(
+        """
+        <style>
+        :root {
+            --auth-bg: #1e293b;
+            --auth-border: rgba(255, 255, 255, 0.1);
+            --auth-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --input-bg: #0f172a;
+            --ink: #e6edf3;
+            --line: #334155;
+        }
+        html, body { background: #0f1117; color: #e6edf3; }
+        .stApp { background: #0f1117; }
+        .stMarkdown, .stText, .stTitle, .stCaption { color: #e6edf3; }
+        .css-1v3t9f7 { background: #0f1117; }
+        .stButton>button { background: #1f2937; color: #e6edf3; }
+        .stSidebar { background: #0b1220; }
+        .auth-header-centered h1 { color: #60a5fa !important; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-# Page Routing
-if page == "Home":
-    st.markdown("## 🏠 Welcome to **Business Data Entry Automation**")
 
-    st.markdown("""
-    <div style='font-size:17px; line-height:1.7'>
-        <span title='Our system helps users save time by automatically analyzing and cleaning messy business data.'>
-        📌 This project automates the process of uploading, cleaning, and visualizing business datasets
-        </span><br><br>
-        <span title='Upload formats include CSV, Excel, and JSON. Cleaned data can be downloaded or visualized directly.'>
-        💡 You can upload `.csv`, `.xlsx`, or `.json` files, and our system will handle null values, outliers, and duplicates.
-        </span><br><br>
-        <span title='Visualize key metrics using pie charts, bar graphs, groupby insights and more.'>
-        📊 After cleaning, the system also generates interactive charts and summaries for analysis.
-        </span>
+
+def show_home_page():
+    st.markdown(
+        """
+        <section class="hero">
+            <div class="hero__content">
+                <p class="eyebrow">Business Data Entry Automation</p>
+                <h1>Upload, clean, and understand business data in one workspace.</h1>
+                <p class="hero__copy">
+                    Bring CSV, Excel, or JSON files into a simple workflow for previewing,
+                    storing, cleaning, visualizing, and downloading analysis-ready data.
+                </p>
+            </div>
+            <div class="hero__panel">
+                <div class="panel-row">
+                    <span>Accepted files</span>
+                    <strong>CSV, XLSX, JSON</strong>
+                </div>
+                <div class="panel-row">
+                    <span>Cleaning</span>
+                    <strong>Missing values, duplicates</strong>
+                </div>
+                <div class="panel-row">
+                    <span>Outputs</span>
+                    <strong>Charts, previews, CSV export</strong>
+                </div>
+            </div>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    stat_1, stat_2, stat_3 = st.columns(3)
+    with stat_1:
+        st.markdown('<div class="stat"><span>Workflow</span><strong>3 steps</strong></div>', unsafe_allow_html=True)
+    with stat_2:
+        st.markdown('<div class="stat"><span>Storage</span><strong>User based</strong></div>', unsafe_allow_html=True)
+    with stat_3:
+        st.markdown('<div class="stat"><span>Analysis</span><strong>Interactive</strong></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="section-title">Workflow</div>', unsafe_allow_html=True)
+    step_1, step_2, step_3 = st.columns(3)
+    with step_1:
+        st.markdown(
+            '<div class="step"><span class="step-index">01</span><h3>Upload</h3><p>Select a business dataset and preview rows before sending it to the API.</p></div>',
+            unsafe_allow_html=True,
+        )
+    with step_2:
+        st.markdown(
+            '<div class="step"><span class="step-index">02</span><h3>Clean</h3><p>Remove duplicate records and fill missing values using column-aware defaults.</p></div>',
+            unsafe_allow_html=True,
+        )
+    with step_3:
+        st.markdown(
+            '<div class="step"><span class="step-index">03</span><h3>Visualize</h3><p>Explore numeric distributions and top category values, then export the cleaned CSV.</p></div>',
+            unsafe_allow_html=True,
+        )
+
+    st.info("Start with Signup or Login, then upload a file from the sidebar.")
+
+
+st.set_page_config(page_title="DataFlow Business Automation", layout="wide")
+load_css()
+
+# Dark mode (UI only)
+if "dark_mode" not in st.session_state:
+    st.session_state["dark_mode"] = False
+
+dark_mode = st.sidebar.toggle("Dark mode", value=st.session_state["dark_mode"], help="Toggle dark theme")
+st.session_state["dark_mode"] = dark_mode
+apply_dark_mode(dark_mode)
+
+
+is_logged_in = bool(st.session_state.get("auth_token"))
+user_name = st.session_state.get("user_name", "User")
+user_email = st.session_state.get("user_email", "")
+
+st.sidebar.markdown(
+    """
+    <div class="sidebar-brand">
+        <div class="sidebar-logo">BA</div>
+        <div>
+            <div class="sidebar-title">DataFlow Business Automation</div>
+            <div class="sidebar-subtitle">Data cleaning workspace</div>
+        </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
-    st.markdown("---")
+if "current_page" not in st.session_state:
+    st.session_state["current_page"] = "Home"
 
-    # 3-Step Walkthrough Section
-    st.markdown("### 🔄 How It Works (3 Easy Steps)")
+st.sidebar.markdown('<div class="sidebar-section sidebar-section--top">Account</div>', unsafe_allow_html=True)
+if is_logged_in:
+    if st.sidebar.button("Logout", key="nav_logout_top", use_container_width=True, type="secondary"):
+        st.session_state.clear()
+        st.session_state["current_page"] = "Home"
+        st.rerun()
+else:
+    login_col, signup_col = st.sidebar.columns(2)
+    with login_col:
+        login_type = "primary" if st.session_state["current_page"] == "Login" else "secondary"
+        if st.button("Login", key="nav_login_top", use_container_width=True, type=login_type):
+            st.session_state["current_page"] = "Login"
+            st.rerun()
+    with signup_col:
+        signup_type = "primary" if st.session_state["current_page"] == "Signup" else "secondary"
+        if st.button("Signup", key="nav_signup_top", use_container_width=True, type=signup_type):
+            st.session_state["current_page"] = "Signup"
+            st.rerun()
 
-    col1, col2, col3 = st.columns(3)
+if is_logged_in:
+    st.sidebar.markdown(
+        f"""
+        <div class="sidebar-status sidebar-status--active">
+            <span class="status-dot"></span>
+            <div>
+                <strong>{user_name}</strong>
+                <small>{user_email}</small>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+else:
+    st.sidebar.markdown(
+        """
+        <div class="sidebar-status">
+            <span class="status-dot"></span>
+            <div>
+                <strong>Not signed in</strong>
+                <small>Login to upload and analyze files</small>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    with col1:
-        st.markdown("#### 📤 Upload")
-        st.markdown("Upload your business dataset in `.csv`, `.xlsx`, or `.json` format.")
+st.sidebar.markdown('<div class="sidebar-section">Workspace</div>', unsafe_allow_html=True)
+for page_name in WORKSPACE_PAGES:
+    is_current = st.session_state["current_page"] == page_name
+    button_type = "primary" if is_current else "secondary"
+    if st.sidebar.button(page_name, key=f"nav_{page_name}", use_container_width=True, type=button_type):
+        st.session_state["current_page"] = page_name
+        st.rerun()
 
-    with col2:
-        st.markdown("#### 🛠️ Auto Clean")
-        st.markdown("The system automatically cleans your data: handles missing values, removes outliers & duplicates.")
+page = st.session_state["current_page"]
 
-    with col3:
-        st.markdown("#### 📊 Visualize")
-        st.markdown("Generate beautiful charts and key insights for fast and effective decision-making.")
-
-    st.markdown("---")
-    st.info("✨ Use the sidebar to login or get started right away by uploading your first file!")
-
+if page == "Home":
+    show_home_page()
 elif page == "Login":
     show_login_page()
-
 elif page == "Signup":
     show_signup_page()
-
 elif page == "Upload File":
-    st.header("📤 Upload File")
     show_upload_page()
-
 elif page == "Recent Files":
-    st.header("🕘 Recent Uploaded Files")
     show_history_page()
-
 elif page == "Process & Visualize":
-    st.header("📊 Process & Visualize Your Dataset")
     show_process_visual_page()
 
-# Footer
 st.sidebar.markdown("---")
-st.sidebar.markdown("🔒 Secure • 🚀 Fast • 💡 Smart")
-st.sidebar.markdown("Developed by San & Team")
+st.sidebar.markdown(
+    """
+    <div class="sidebar-footer">
+        <div><strong>Secure</strong><span>JWT protected sessions</span></div>
+        <div><strong>Fast</strong><span>Preview before upload</span></div>
+        <div><strong>Smart</strong><span>Clean and visualize</span></div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)

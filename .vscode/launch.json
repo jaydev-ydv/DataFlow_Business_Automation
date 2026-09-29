@@ -5,11 +5,56 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
+            "name": "Start Backend (Flask API)",
+            "type": "debugpy",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "Backend(Flask ApI)/app.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "true"
+            },
+            "args": [
+                "run",
+                "--host=127.0.0.1",
+                "--port=5000"
+            ],
+            "jinja": true,
+            "justMyCode": true,
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Start Frontend (Streamlit UI)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "Frontend(Streamlit UI)/app.py",
+                "--server.port=8501",
+                "--server.address=127.0.0.1"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Start Both (Backend + Frontend)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/start_app.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Run Both Services",
+            "configurations": [
+                "Start Backend (Flask API)",
+                "Start Frontend (Streamlit UI)"
+            ],
+            "stopAll": true
         }
     ]
 }

@@ -188,6 +188,29 @@ def apply_dark_mode(dark_mode: bool):
                 background: #121117 !important;
                 border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
             }
+
+            /* File card in dark mode */
+            .file-card {
+                background: #17151E !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                border-radius: 10px !important;
+                padding: 12px 16px !important;
+                margin-bottom: 6px !important;
+            }
+
+            .file-card-name {
+                color: #FFFFFF !important;
+                font-size: 0.95rem !important;
+                display: block !important;
+                word-break: break-all !important;
+            }
+
+            .file-card-time {
+                color: #9CA3AF !important;
+                font-size: 0.8rem !important;
+                margin-top: 2px !important;
+                display: block !important;
+            }
             </style>
             """,
             unsafe_allow_html=True,
@@ -608,6 +631,38 @@ def apply_dark_mode(dark_mode: bool):
 
             .sidebar-footer div span {
                 color: #5C5868 !important;
+            }
+
+            /* File card in light mode */
+            .file-card {
+                background: #FFFFFF !important;
+                border: 1px solid #E8E4EB !important;
+                border-radius: 10px !important;
+                padding: 12px 16px !important;
+                margin-bottom: 6px !important;
+                box-shadow: 0 4px 14px rgba(25, 20, 30, 0.03) !important;
+            }
+
+            .file-card-name {
+                color: #131118 !important;
+                font-size: 0.95rem !important;
+                display: block !important;
+                word-break: break-all !important;
+            }
+
+            .file-card-time {
+                color: #5C5868 !important;
+                font-size: 0.8rem !important;
+                margin-top: 2px !important;
+                display: block !important;
+            }
+
+            /* Mobile Hamburger in light mode */
+            [data-testid="stSidebarCollapsedControl"] button {
+                background: #FFFFFF !important;
+                border: 1px solid #DCD7E1 !important;
+                color: #FA6682 !important;
+                box-shadow: 0 2px 8px rgba(25, 20, 30, 0.06) !important;
             }
             </style>
             """,

@@ -130,31 +130,19 @@ def show_history_page():
 
     latest_file = files[0]
     latest_filename = escape(str(latest_file["filename"]))
-    latest_col, delete_latest_col = st.columns([2.7, 1], vertical_alignment="center")
-    with latest_col:
-        st.markdown(
-            f"""
-            <div class="latest-file">
-                <span>Latest uploaded file</span>
-                <strong>{latest_filename}</strong>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with delete_latest_col:
-        if st.button("Delete Latest", key="delete_latest_file", use_container_width=True):
-            _delete_file(latest_file["id"], headers)
-
     st.markdown(
-        """
-        <div class="file-list-header">
-            <span>Filename</span>
-            <span>Upload Time</span>
-            <span>Action</span>
+        f"""
+        <div class="latest-file">
+            <span>Latest uploaded file</span>
+            <strong>{latest_filename}</strong>
         </div>
         """,
         unsafe_allow_html=True,
     )
+    if st.button("Delete Latest", key="delete_latest_file", use_container_width=True):
+        _delete_file(latest_file["id"], headers)
+
+    st.markdown("<div style='margin-top:20px'></div>", unsafe_allow_html=True)
 
     # UI-side pagination for better table UX within the backend page payload
     ui_page_size = st.selectbox("Rows per view", [5, 10, 15], index=1, key="history_ui_page_size")
@@ -170,26 +158,31 @@ def show_history_page():
     for file in ui_files:
         filename = escape(str(file["filename"]))
         upload_time = escape(str(file["upload_time"]))
-        name_col, time_col, action_col = st.columns([2.3, 1.25, 0.7], vertical_alignment="center")
-        with name_col:
-            st.markdown(f'<div class="file-list-name">{filename}</div>', unsafe_allow_html=True)
-        with time_col:
-            st.markdown(f'<div class="file-list-time">{upload_time}</div>', unsafe_allow_html=True)
-        with action_col:
-            if st.button("Delete", key=f"delete_file_{file['id']}", use_container_width=True):
+        with st.container():
+            st.markdown(
+                f"""
+                <div class="file-card">
+                    <div class="file-card-info">
+                        <strong class="file-card-name">{filename}</strong>
+                        <span class="file-card-time">{upload_time}</span>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            if st.button(f"Delete", key=f"delete_file_{file['id']}", use_container_width=True):
                 _delete_file(file["id"], headers)
 
-    ui_prev_col, ui_page_col, ui_next_col = st.columns([1, 2, 1], vertical_alignment="center")
+    ui_prev_col, ui_next_col = st.columns(2)
     with ui_prev_col:
-        if st.button("View Previous", disabled=(ui_page <= 1), use_container_width=True):
+        if st.button("Previous", disabled=(ui_page <= 1), key="history_prev_btn", use_container_width=True):
             st.session_state["history_ui_page"] = max(ui_page - 1, 1)
             st.rerun()
-    with ui_page_col:
-        st.caption(f"View {ui_page} of {ui_pages}")
     with ui_next_col:
-        if st.button("View Next", disabled=(ui_page >= ui_pages), use_container_width=True):
+        if st.button("Next", disabled=(ui_page >= ui_pages), key="history_next_btn", use_container_width=True):
             st.session_state["history_ui_page"] = ui_page + 1
             st.rerun()
+    st.caption(f"Showing page {ui_page} of {ui_pages}")
 
 
     # Keep backend pagination controls (switching API pages)

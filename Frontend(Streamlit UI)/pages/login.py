@@ -42,9 +42,7 @@ def show_login_page():
         unsafe_allow_html=True,
     )
 
-    _, form_col, _ = st.columns([1, 1.8, 1])
-
-    with form_col:
+    with st.container():
         with st.form("login_form"):
             email = st.text_input(
                 "Email address",

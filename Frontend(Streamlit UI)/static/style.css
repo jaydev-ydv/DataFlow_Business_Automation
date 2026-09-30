@@ -576,3 +576,203 @@ div[data-testid="stForm"]::before {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
 }
+
+/* ==========================================================================
+   Smartphone & Mobile Screen Responsiveness (<= 768px)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    /* Container paddings */
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 2.5rem !important;
+        padding-left: 0.85rem !important;
+        padding-right: 0.85rem !important;
+        max-width: 100% !important;
+    }
+
+    /* Auto-stack horizontal columns on smartphones */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    [data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+
+    /* Hero Section */
+    .hero {
+        grid-template-columns: 1fr !important;
+        padding: 22px 16px !important;
+        gap: 20px !important;
+        min-height: auto !important;
+        border-radius: 12px !important;
+    }
+
+    .hero h1 {
+        font-size: 2.1rem !important;
+        line-height: 1.15 !important;
+        letter-spacing: -0.02em !important;
+        margin-bottom: 12px !important;
+    }
+
+    .hero__copy {
+        font-size: 0.92rem !important;
+        line-height: 1.55 !important;
+        margin-bottom: 18px !important;
+    }
+
+    .hero-actions {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 10px !important;
+    }
+
+    .btn-coral, .btn-ghost {
+        width: 100% !important;
+        text-align: center !important;
+        display: block !important;
+        padding: 12px 16px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .hero__panel {
+        padding: 16px !important;
+        width: 100% !important;
+        border-radius: 10px !important;
+    }
+
+    .panel-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+        padding: 10px 0 !important;
+    }
+
+    .panel-row strong {
+        text-align: left !important;
+        font-size: 0.92rem !important;
+    }
+
+    /* Specification Section */
+    .spec-container {
+        margin-top: 26px !important;
+        gap: 16px !important;
+    }
+
+    .spec-row {
+        grid-template-columns: 1fr !important;
+        gap: 6px !important;
+        padding-bottom: 14px !important;
+    }
+
+    .spec-tag {
+        font-size: 0.72rem !important;
+    }
+
+    .spec-val {
+        font-size: 0.9rem !important;
+    }
+
+    /* Stat & Step Cards */
+    .stat, .step {
+        padding: 16px !important;
+        border-radius: 10px !important;
+    }
+
+    .stat strong {
+        font-size: 1.45rem !important;
+    }
+
+    .step h3 {
+        font-size: 1.05rem !important;
+    }
+
+    .step p {
+        font-size: 0.88rem !important;
+    }
+
+    .section-title {
+        font-size: 1.2rem !important;
+        margin: 24px 0 14px !important;
+    }
+
+    /* Auth Forms */
+    .auth-wrapper {
+        padding: 0 !important;
+        margin: 10px auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .auth-card-header h1 {
+        font-size: 1.75rem !important;
+    }
+
+    .auth-card-header p {
+        font-size: 0.88rem !important;
+    }
+
+    div[data-testid="stForm"] {
+        padding: 1.4rem 1.1rem !important;
+        border-radius: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Touch-friendly inputs & buttons (min 46px tap target) */
+    [data-testid="stTextInput"] input,
+    [data-testid="stSelectbox"] > div > div {
+        min-height: 48px !important;
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+    }
+
+    .stButton > button,
+    [data-testid="stFormSubmitButton"] button,
+    .stDownloadButton > button {
+        min-height: 48px !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* File Uploader Dropzone */
+    [data-testid="stFileUploadDropzone"] {
+        padding: 22px 14px !important;
+    }
+
+    /* Sidebar Mobile Drawer */
+    [data-testid="stSidebar"] {
+        width: 86vw !important;
+        max-width: 320px !important;
+    }
+
+    /* Mobile Hamburger Menu */
+    [data-testid="stSidebarCollapsedControl"] button {
+        background: #17151E !important;
+        border: 1px solid rgba(250, 102, 130, 0.4) !important;
+        color: #FA6682 !important;
+        border-radius: 8px !important;
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    /* File List on Mobile */
+    .latest-file {
+        padding: 12px 14px !important;
+    }
+
+    .latest-file strong {
+        word-break: break-all !important;
+        font-size: 0.92rem !important;
+    }
+
+    .file-list-name {
+        word-break: break-all !important;
+        font-size: 0.88rem !important;
+    }
+
+    .file-list-time {
+        font-size: 0.78rem !important;
+    }
+}

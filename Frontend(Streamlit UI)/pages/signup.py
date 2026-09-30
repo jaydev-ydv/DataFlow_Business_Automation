@@ -45,9 +45,7 @@ def show_signup_page():
         unsafe_allow_html=True,
     )
 
-    _, form_col, _ = st.columns([1, 1.8, 1])
-
-    with form_col:
+    with st.container():
         with st.form("signup_form"):
             full_name = st.text_input(
                 "Full name",

@@ -1,29 +1,6 @@
-# Business Automation Tool - Combined Requirements
-# Install all dependencies: pip install -r requirements.txt
-
-# Flask Backend Dependencies
-flask==3.0.0
-flask-bcrypt==1.0.1
-flask-cors==4.0.0
-flask-sqlalchemy==3.1.1
-flask-migrate==4.0.5
-flask-jwt-extended==4.6.0
-flask-wtf==1.2.1
-
-# Database & Config
-python-dotenv==1.0.0
-psycopg2-binary==2.9.9
-
-# Streamlit Frontend Dependencies
-streamlit==1.29.0
-
-# Data Processing & Visualization
-pandas==2.1.4
-plotly==5.18.0
-openpyxl==3.1.2
-
-# HTTP Requests
-requests==2.31.0
-
-# Optional: for better development experience
-# watchdog==3.0.0  # Required for Streamlit auto-reload on Linux
+streamlit
+pandas
+plotly
+requests
+openpyxl
+python-dotenv

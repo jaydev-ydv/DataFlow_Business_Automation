@@ -20,189 +20,324 @@ def load_css():
 
 
 def apply_dark_mode(dark_mode: bool):
-    if not dark_mode:
-        return
+    if dark_mode:
+        st.markdown(
+            """
+            <style>
+            :root {
+                --bg: #0b0f19;
+                --surface: #111827;
+                --ink: #f8fafc;
+                --muted: #94a3b8;
+                --line: rgba(255, 255, 255, 0.08);
+                --primary: #3b82f6;
+                --primary-dark: #2563eb;
+                --auth-bg: #111827;
+                --auth-border: rgba(255, 255, 255, 0.08);
+                --auth-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+                --auth-title: #ffffff;
+                --auth-subtitle: #94a3b8;
+                --input-bg: #0b0f19;
+            }
 
-    st.markdown(
-        """
-        <style>
-        :root {
-            --bg: #0b0f19;
-            --surface: #111827;
-            --ink: #f8fafc;
-            --muted: #94a3b8;
-            --line: rgba(255, 255, 255, 0.08);
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --auth-bg: #111827;
-            --auth-border: rgba(255, 255, 255, 0.1);
-            --auth-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-            --input-bg: #0b0f19;
-        }
+            html, body, .stApp {
+                background: #0b0f19 !important;
+                color: #f8fafc !important;
+            }
 
-        /* Base Typography & Background */
-        html, body, .stApp {
-            background: #0b0f19 !important;
-            color: #f8fafc !important;
-        }
+            .stMarkdown, .stText, .stCaption {
+                color: #f8fafc !important;
+            }
 
-        .stMarkdown, .stText, .stCaption {
-            color: #f8fafc;
-        }
+            /* Auth Header & Card */
+            .auth-card-header h1 {
+                color: #ffffff !important;
+                font-weight: 800 !important;
+                letter-spacing: -0.02em !important;
+            }
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #131c2e 0%, #0d1522 100%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
-        }
+            .auth-card-header p {
+                color: #94a3b8 !important;
+            }
 
-        .hero h1 {
-            color: #ffffff !important;
-            font-weight: 800 !important;
-            letter-spacing: -0.02em !important;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-        }
+            div[data-testid="stForm"] {
+                background: #111827 !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+            }
 
-        .hero__copy {
-            color: #94a3b8 !important;
-        }
+            [data-testid="stTextInput"] input {
+                background: #0b0f19 !important;
+                color: #f8fafc !important;
+                border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+            }
 
-        .eyebrow {
-            color: #38bdf8 !important;
-            background: rgba(56, 189, 248, 0.12) !important;
-            border: 1px solid rgba(56, 189, 248, 0.25) !important;
-            padding: 4px 14px !important;
-            border-radius: 9999px !important;
-            display: inline-block !important;
-        }
+            [data-testid="stTextInput"] input:focus {
+                border-color: #3b82f6 !important;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+            }
 
-        .hero__panel {
-            background: rgba(11, 15, 25, 0.95) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
-        }
+            [data-testid="stTextInput"] label {
+                color: #e2e8f0 !important;
+            }
 
-        .hero__panel .panel-row {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
-        }
+            .auth-switch-prompt span {
+                color: #94a3b8 !important;
+            }
 
-        .hero__panel .panel-row span {
-            color: #94a3b8 !important;
-        }
+            /* Hero Section */
+            .hero {
+                background: linear-gradient(135deg, #131c2e 0%, #0d1522 100%) !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+            }
 
-        .hero__panel .panel-row strong {
-            color: #60a5fa !important;
-        }
+            .hero h1 {
+                color: #ffffff !important;
+                font-weight: 800 !important;
+                letter-spacing: -0.02em !important;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            }
 
-        /* Stat & Step Cards */
-        .stat, .step {
-            background: linear-gradient(180deg, #151f32 0%, #111827 100%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            border-radius: 12px !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
-        }
+            .hero__copy {
+                color: #94a3b8 !important;
+            }
 
-        .stat:hover, .step:hover {
-            border-color: rgba(59, 130, 246, 0.45) !important;
-            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15) !important;
-            transform: translateY(-2px) !important;
-        }
+            .eyebrow {
+                color: #38bdf8 !important;
+                background: rgba(56, 189, 248, 0.12) !important;
+                border: 1px solid rgba(56, 189, 248, 0.25) !important;
+                padding: 4px 14px !important;
+                border-radius: 9999px !important;
+                display: inline-block !important;
+            }
 
-        .stat span {
-            color: #94a3b8 !important;
-        }
+            .hero__panel {
+                background: rgba(11, 15, 25, 0.95) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+            }
 
-        .stat strong {
-            color: #ffffff !important;
-        }
+            .hero__panel .panel-row {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+            }
 
-        .section-title {
-            color: #ffffff !important;
-            border-left: 3px solid #3b82f6 !important;
-            padding-left: 10px !important;
-        }
+            .hero__panel .panel-row span {
+                color: #94a3b8 !important;
+            }
 
-        .step-index {
-            background: rgba(59, 130, 246, 0.15) !important;
-            color: #60a5fa !important;
-            padding: 2px 10px !important;
-            border-radius: 6px !important;
-        }
+            .hero__panel .panel-row strong {
+                color: #60a5fa !important;
+            }
 
-        .step h3 {
-            color: #f1f5f9 !important;
-        }
+            /* Stat & Step Cards */
+            .stat, .step {
+                background: linear-gradient(180deg, #151f32 0%, #111827 100%) !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                border-radius: 12px !important;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+            }
 
-        .step p {
-            color: #94a3b8 !important;
-        }
+            .stat span, .step p {
+                color: #94a3b8 !important;
+            }
 
-        /* Files & Tables */
-        .latest-file {
-            background: #111827 !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
+            .stat strong, .step h3 {
+                color: #ffffff !important;
+            }
 
-        .latest-file span {
-            color: #94a3b8 !important;
-        }
+            .section-title {
+                color: #ffffff !important;
+                border-left: 3px solid #3b82f6 !important;
+                padding-left: 10px !important;
+            }
 
-        .latest-file strong {
-            color: #f8fafc !important;
-        }
+            .step-index {
+                background: rgba(59, 130, 246, 0.15) !important;
+                color: #60a5fa !important;
+            }
 
-        .file-list-header {
-            color: #94a3b8 !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
+            /* Tables & lists */
+            .latest-file {
+                background: #111827 !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            }
 
-        .file-list-name {
-            color: #f8fafc !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-        }
+            .latest-file span, .file-list-time, .file-list-header {
+                color: #94a3b8 !important;
+            }
 
-        .file-list-time {
-            color: #94a3b8 !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-        }
+            .latest-file strong, .file-list-name {
+                color: #f8fafc !important;
+            }
 
-        /* Form Inputs */
-        [data-testid="stTextInput"] input {
-            background: #0f172a !important;
-            color: #f8fafc !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-        }
+            [data-testid="stSidebar"] {
+                background: #070a11 !important;
+                border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <style>
+            :root {
+                --bg: #f8fafc;
+                --surface: #ffffff;
+                --ink: #0f172a;
+                --muted: #64748b;
+                --line: #e2e8f0;
+                --primary: #2563eb;
+                --primary-dark: #1d4ed8;
+                --auth-bg: #ffffff;
+                --auth-border: #e2e8f0;
+                --auth-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+                --auth-title: #0f172a;
+                --auth-subtitle: #475569;
+                --input-bg: #ffffff;
+            }
 
-        [data-testid="stTextInput"] input:focus {
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
-        }
+            html, body, .stApp {
+                background: #f8fafc !important;
+                color: #0f172a !important;
+            }
 
-        [data-testid="stTextInput"] label {
-            color: #e2e8f0 !important;
-        }
+            .stMarkdown, .stText, .stCaption {
+                color: #0f172a !important;
+            }
 
-        .auth-card-header h1 {
-            color: #ffffff !important;
-            font-weight: 800 !important;
-            letter-spacing: -0.02em !important;
-        }
+            /* Auth Header & Card */
+            .auth-card-header h1 {
+                color: #0f172a !important;
+                font-weight: 800 !important;
+                letter-spacing: -0.02em !important;
+            }
 
-        .auth-card-header p {
-            color: #94a3b8 !important;
-        }
+            .auth-card-header p {
+                color: #475569 !important;
+            }
 
-        /* Sidebar overrides */
-        [data-testid="stSidebar"] {
-            background: #070a11 !important;
-            border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+            div[data-testid="stForm"] {
+                background: #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
+                box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08) !important;
+            }
+
+            [data-testid="stTextInput"] input {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                border: 1.5px solid #cbd5e1 !important;
+            }
+
+            [data-testid="stTextInput"] input:focus {
+                border-color: #2563eb !important;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+            }
+
+            [data-testid="stTextInput"] label {
+                color: #1e293b !important;
+                font-weight: 600 !important;
+            }
+
+            .auth-switch-prompt span {
+                color: #475569 !important;
+            }
+
+            /* Hero Section */
+            .hero {
+                background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(16, 185, 129, 0.05)), #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
+                box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06) !important;
+            }
+
+            .hero h1 {
+                color: #0f172a !important;
+                font-weight: 800 !important;
+                letter-spacing: -0.02em !important;
+            }
+
+            .hero__copy {
+                color: #475569 !important;
+            }
+
+            .eyebrow {
+                color: #0284c7 !important;
+                background: rgba(2, 132, 199, 0.08) !important;
+                border: 1px solid rgba(2, 132, 199, 0.2) !important;
+                padding: 4px 14px !important;
+                border-radius: 9999px !important;
+                display: inline-block !important;
+            }
+
+            .hero__panel {
+                background: #0f172a !important;
+                border: 1px solid rgba(15, 23, 42, 0.2) !important;
+                color: #f8fafc !important;
+            }
+
+            .hero__panel .panel-row {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            }
+
+            .hero__panel .panel-row span {
+                color: #94a3b8 !important;
+            }
+
+            .hero__panel .panel-row strong {
+                color: #38bdf8 !important;
+            }
+
+            /* Stat & Step Cards */
+            .stat, .step {
+                background: #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 12px !important;
+                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04) !important;
+            }
+
+            .stat span, .step p {
+                color: #64748b !important;
+            }
+
+            .stat strong, .step h3 {
+                color: #0f172a !important;
+            }
+
+            .section-title {
+                color: #0f172a !important;
+                border-left: 3px solid #2563eb !important;
+                padding-left: 10px !important;
+            }
+
+            .step-index {
+                background: rgba(37, 99, 235, 0.1) !important;
+                color: #2563eb !important;
+            }
+
+            /* Tables & lists */
+            .latest-file {
+                background: #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
+            }
+
+            .latest-file span, .file-list-time, .file-list-header {
+                color: #64748b !important;
+            }
+
+            .latest-file strong, .file-list-name {
+                color: #0f172a !important;
+            }
+
+            [data-testid="stSidebar"] {
+                background: #0f172a !important;
+                border-right: 1px solid #1e293b !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 

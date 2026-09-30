@@ -346,13 +346,13 @@ h3 {
 .auth-card-header h1 {
     font-size: 2.1rem;
     font-weight: 800;
-    color: #ffffff;
+    color: var(--auth-title, #0f172a);
     margin: 0 0 8px;
     letter-spacing: -0.02em;
 }
 
 .auth-card-header p {
-    color: #94a3b8;
+    color: var(--auth-subtitle, #475569);
     font-size: 0.95rem;
     line-height: 1.5;
     margin: 0;
@@ -360,11 +360,11 @@ h3 {
 
 /* Custom Auth Form Card */
 div[data-testid="stForm"] {
-    background: #111827 !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: var(--auth-bg, #ffffff) !important;
+    border: 1px solid var(--auth-border, #e2e8f0) !important;
     border-radius: 16px !important;
     padding: 2rem 2.2rem !important;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45) !important;
+    box-shadow: var(--auth-shadow, 0 20px 45px rgba(15, 23, 42, 0.08)) !important;
     position: relative;
     overflow: hidden;
 }

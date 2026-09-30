@@ -6,11 +6,20 @@ from config import BACKEND_URL, REQUEST_TIMEOUT
 
 def _error_message(response, fallback):
     try:
-        error = response.json().get("error", fallback)
+        body = response.json()
+        error = body.get("error", fallback)
         if isinstance(error, dict):
-            return error.get("message", fallback)
-        return error
-    except ValueError:
+            msg = error.get("message", fallback)
+            details = error.get("details")
+            if isinstance(details, dict):
+                detail_lines = [f"• {v}" for v in details.values() if v]
+                if detail_lines:
+                    return f"{msg}\n\n" + "\n".join(detail_lines)
+            elif isinstance(details, list):
+                return f"{msg}: {', '.join(str(d) for d in details)}"
+            return msg
+        return str(error)
+    except Exception:
         return fallback
 
 
@@ -69,15 +78,16 @@ def show_login_page():
         st.warning("Please enter email and password.")
         return
 
-    try:
-        response = requests.post(
-            f"{BACKEND_URL}/login",
-            json={"email": email.strip(), "password": password},
-            timeout=REQUEST_TIMEOUT,
-        )
-    except requests.exceptions.RequestException as exc:
-        st.error(f"Could not reach backend: {exc}")
-        return
+    with st.spinner("Signing in..."):
+        try:
+            response = requests.post(
+                f"{BACKEND_URL}/login",
+                json={"email": email.strip(), "password": password},
+                timeout=REQUEST_TIMEOUT,
+            )
+        except requests.exceptions.RequestException as exc:
+            st.error(f"Could not reach backend ({BACKEND_URL}): {exc}")
+            return
 
     if response.status_code == 200:
         response_data = response.json()
@@ -86,7 +96,8 @@ def show_login_page():
         st.session_state["user_id"] = data["user"]["id"]
         st.session_state["user_email"] = data["user"]["email"]
         st.session_state["user_name"] = data["user"].get("full_name", "User")
-        st.success("Login successful.")
+        st.session_state["current_page"] = "Upload File"
+        st.success("Login successful! Redirecting...")
         st.rerun()
     else:
         st.error(_error_message(response, "Invalid email or password."))

@@ -11,11 +11,20 @@ from config import BACKEND_URL, REQUEST_TIMEOUT
 
 def _error_message(response, fallback):
     try:
-        error = response.json().get("error", fallback)
+        body = response.json()
+        error = body.get("error", fallback)
         if isinstance(error, dict):
-            return error.get("message", fallback)
-        return error
-    except ValueError:
+            msg = error.get("message", fallback)
+            details = error.get("details")
+            if isinstance(details, dict):
+                detail_lines = [f"• {v}" for v in details.values() if v]
+                if detail_lines:
+                    return f"{msg}\n\n" + "\n".join(detail_lines)
+            elif isinstance(details, list):
+                return f"{msg}: {', '.join(str(d) for d in details)}"
+            return msg
+        return str(error)
+    except Exception:
         return fallback
 
 

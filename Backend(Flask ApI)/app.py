@@ -57,16 +57,16 @@ jwt = JWTManager(app)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 migrate = Migrate(app, db, directory=str(ROOT_DIR / "migrations"))
-allowed_origins = [
-    origin.strip()
-    for origin in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:8501,http://127.0.0.1:8501").split(",")
-    if origin.strip()
-]
-CORS(app, origins=allowed_origins)
+cors_env = os.getenv("CORS_ALLOWED_ORIGINS", "*")
+if cors_env.strip() == "*":
+    CORS(app)
+else:
+    allowed_origins = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
+    CORS(app, origins=allowed_origins)
 
 
 EMAIL_RE = re.compile(r"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$", re.IGNORECASE)
-NAME_RE = re.compile(r"^[A-Za-z][A-Za-z\s'.-]{1,98}[A-Za-z.]$")
+NAME_RE = re.compile(r"^[\w\s'.-]{2,100}$", re.UNICODE)
 PASSWORD_SPECIAL_RE = re.compile(r"[^A-Za-z0-9]")
 ALLOWED_EXTENSIONS = {".csv", ".xlsx", ".json"}
 CONTROL_CHARS_RE = re.compile(r"[\x00-\x1f\x7f]")
@@ -328,26 +328,14 @@ def delete_stored_file(file_entry):
 def validate_password(password, email="", full_name=""):
     if not isinstance(password, str):
         return "Password is required."
-    if len(password) < 12:
-        return "Password must be at least 12 characters long."
+    if len(password) < 8:
+        return "Password must be at least 8 characters long."
     if len(password) > 128:
         return "Password must be 128 characters or fewer."
-    if not re.search(r"[A-Z]", password):
-        return "Password must include an uppercase letter."
-    if not re.search(r"[a-z]", password):
-        return "Password must include a lowercase letter."
-    if not re.search(r"\d", password):
-        return "Password must include a number."
-    if not PASSWORD_SPECIAL_RE.search(password):
-        return "Password must include a special character."
-
-    lowered = password.lower()
-    local_part = email.split("@", 1)[0].lower() if email else ""
-    name_parts = [part.lower() for part in re.split(r"\s+", full_name) if len(part) >= 3]
-    if local_part and local_part in lowered:
-        return "Password must not contain your email username."
-    if any(part in lowered for part in name_parts):
-        return "Password must not contain your name."
+    if not re.search(r"[A-Za-z]", password):
+        return "Password must include at least one letter."
+    if not re.search(r"\d", password) and not PASSWORD_SPECIAL_RE.search(password):
+        return "Password must include at least one number or special character."
     return None
 
 
@@ -661,7 +649,7 @@ def get_openapi_spec():
 
 @app.route('/signup', methods=['POST'])
 @csrf.exempt
-@rate_limit(5, 15 * 60, _auth_rate_key)
+@rate_limit(30, 15 * 60, _auth_rate_key)
 def signup():
     payload, error = validate_signup_payload()
     if error:
@@ -687,7 +675,7 @@ def signup():
 
 @app.route('/login', methods=['POST'])
 @csrf.exempt
-@rate_limit(10, 15 * 60, _auth_rate_key)
+@rate_limit(30, 15 * 60, _auth_rate_key)
 def login():
     payload, error = validate_login_payload()
     if error:

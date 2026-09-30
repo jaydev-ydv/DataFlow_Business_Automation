@@ -1,3 +1,4 @@
+import time
 import requests
 import streamlit as st
 
@@ -6,11 +7,20 @@ from config import BACKEND_URL, REQUEST_TIMEOUT
 
 def _error_message(response, fallback):
     try:
-        error = response.json().get("error", fallback)
+        body = response.json()
+        error = body.get("error", fallback)
         if isinstance(error, dict):
-            return error.get("message", fallback)
-        return error
-    except ValueError:
+            msg = error.get("message", fallback)
+            details = error.get("details")
+            if isinstance(details, dict):
+                detail_lines = [f"• {v}" for v in details.values() if v]
+                if detail_lines:
+                    return f"{msg}\n\n" + "\n".join(detail_lines)
+            elif isinstance(details, list):
+                return f"{msg}: {', '.join(str(d) for d in details)}"
+            return msg
+        return str(error)
+    except Exception:
         return fallback
 
 
@@ -50,7 +60,7 @@ def show_signup_page():
             password = st.text_input(
                 "Password",
                 type="password",
-                placeholder="Min 12 chars with upper, lower, number, special",
+                placeholder="Min 8 characters (letters & numbers)",
             )
             submitted = st.form_submit_button("Create Account", use_container_width=True)
 
@@ -74,21 +84,25 @@ def show_signup_page():
     if not full_name or not email or not password:
         st.warning("All fields are required.")
         return
-    if len(password) < 12:
-        st.warning("Password must be at least 12 characters.")
+    if len(password) < 8:
+        st.warning("Password must be at least 8 characters long.")
         return
 
-    try:
-        response = requests.post(
-            f"{BACKEND_URL}/signup",
-            json={"full_name": full_name.strip(), "email": email.strip(), "password": password},
-            timeout=REQUEST_TIMEOUT,
-        )
-    except requests.exceptions.RequestException as exc:
-        st.error(f"Could not reach backend: {exc}")
-        return
+    with st.spinner("Creating your account..."):
+        try:
+            response = requests.post(
+                f"{BACKEND_URL}/signup",
+                json={"full_name": full_name.strip(), "email": email.strip(), "password": password},
+                timeout=REQUEST_TIMEOUT,
+            )
+        except requests.exceptions.RequestException as exc:
+            st.error(f"Could not reach backend ({BACKEND_URL}): {exc}")
+            return
 
     if response.status_code == 201:
-        st.success("Signup successful. You can log in now.")
+        st.success("Account created successfully! Redirecting to login...")
+        time.sleep(1.2)
+        st.session_state["current_page"] = "Login"
+        st.rerun()
     else:
         st.error(_error_message(response, "Signup failed."))

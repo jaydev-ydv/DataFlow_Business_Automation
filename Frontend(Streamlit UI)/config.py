@@ -16,5 +16,5 @@ if not backend_url:
     except Exception:
         backend_url = None
 
-BACKEND_URL = (backend_url or "http://127.0.0.1:5000").rstrip("/")
-REQUEST_TIMEOUT = 15
+BACKEND_URL = (backend_url or "https://dataflow-business-automation-backend.onrender.com").rstrip("/")
+REQUEST_TIMEOUT = 30

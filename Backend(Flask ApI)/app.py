@@ -638,6 +638,16 @@ def openapi_spec():
     }
 
 
+@app.route("/", methods=["GET"])
+def index():
+    return api_success({
+        "name": "DataFlow Business Automation API",
+        "status": "running",
+        "health": "/health",
+        "openapi": "/openapi.json"
+    }, 200, "API is active.")
+
+
 @app.route("/health", methods=["GET"])
 def health():
     return api_success({"status": "ok"})

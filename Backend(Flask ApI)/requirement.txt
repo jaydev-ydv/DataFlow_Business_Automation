@@ -7,6 +7,7 @@ flask-jwt-extended
 flask-wtf
 python-dotenv
 psycopg2-binary
+psycopg[binary]
 pandas
 plotly
 gunicorn

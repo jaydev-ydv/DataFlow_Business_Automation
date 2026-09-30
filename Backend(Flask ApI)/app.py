@@ -28,7 +28,12 @@ load_dotenv(ROOT_DIR / ".env", override=True)
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///business_automation.db")
+db_url = os.getenv("DATABASE_URL", "sqlite:///business_automation.db")
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+"):
+    db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "dev-secret-key-change-me-32-characters")
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY", "dev-jwt-secret-key-change-me-32-chars")

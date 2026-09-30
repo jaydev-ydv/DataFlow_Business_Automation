@@ -129,9 +129,12 @@ def show_process_visual_page():
     numeric_columns = processed.select_dtypes(include="number").columns.tolist()
     text_columns = processed.select_dtypes(exclude="number").columns.tolist()
 
+    theme_template = "plotly_dark" if st.session_state.get("dark_mode", True) else "plotly_white"
+
     if numeric_columns:
         column = st.selectbox("Numeric column", numeric_columns)
-        chart = px.histogram(processed, x=column, title=f"Distribution of {column}")
+        chart = px.histogram(processed, x=column, title=f"Distribution of {column}", template=theme_template)
+        chart.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(chart, use_container_width=True)
     else:
         st.info("No numeric columns found for histogram charts.")
@@ -140,7 +143,8 @@ def show_process_visual_page():
         category = st.selectbox("Category column", text_columns)
         top_values = processed[category].astype(str).value_counts().head(10).reset_index()
         top_values.columns = [category, "count"]
-        chart = px.bar(top_values, x=category, y="count", title=f"Top values in {category}")
+        chart = px.bar(top_values, x=category, y="count", title=f"Top values in {category}", template=theme_template)
+        chart.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(chart, use_container_width=True)
 
     csv_data = processed.to_csv(index=False).encode("utf-8")

@@ -20,7 +20,6 @@ def load_css():
 
 
 def apply_dark_mode(dark_mode: bool):
-    # Minimal overrides; Streamlit theme is controlled by its own settings.
     if not dark_mode:
         return
 
@@ -28,20 +27,176 @@ def apply_dark_mode(dark_mode: bool):
         """
         <style>
         :root {
-            --auth-bg: #1e293b;
+            --bg: #0b0f19;
+            --surface: #111827;
+            --ink: #f8fafc;
+            --muted: #94a3b8;
+            --line: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --auth-bg: #111827;
             --auth-border: rgba(255, 255, 255, 0.1);
-            --auth-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            --input-bg: #0f172a;
-            --ink: #e6edf3;
-            --line: #334155;
+            --auth-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            --input-bg: #0b0f19;
         }
-        html, body { background: #0f1117; color: #e6edf3; }
-        .stApp { background: #0f1117; }
-        .stMarkdown, .stText, .stTitle, .stCaption { color: #e6edf3; }
-        .css-1v3t9f7 { background: #0f1117; }
-        .stButton>button { background: #1f2937; color: #e6edf3; }
-        .stSidebar { background: #0b1220; }
-        .auth-header-centered h1 { color: #60a5fa !important; }
+
+        /* Base Typography & Background */
+        html, body, .stApp {
+            background: #0b0f19 !important;
+            color: #f8fafc !important;
+        }
+
+        .stMarkdown, .stText, .stCaption {
+            color: #f8fafc;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #131c2e 0%, #0d1522 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .hero h1 {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.02em !important;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .hero__copy {
+            color: #94a3b8 !important;
+        }
+
+        .eyebrow {
+            color: #38bdf8 !important;
+            background: rgba(56, 189, 248, 0.12) !important;
+            border: 1px solid rgba(56, 189, 248, 0.25) !important;
+            padding: 4px 14px !important;
+            border-radius: 9999px !important;
+            display: inline-block !important;
+        }
+
+        .hero__panel {
+            background: rgba(11, 15, 25, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .hero__panel .panel-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+        }
+
+        .hero__panel .panel-row span {
+            color: #94a3b8 !important;
+        }
+
+        .hero__panel .panel-row strong {
+            color: #60a5fa !important;
+        }
+
+        /* Stat & Step Cards */
+        .stat, .step {
+            background: linear-gradient(180deg, #151f32 0%, #111827 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+        }
+
+        .stat:hover, .step:hover {
+            border-color: rgba(59, 130, 246, 0.45) !important;
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .stat span {
+            color: #94a3b8 !important;
+        }
+
+        .stat strong {
+            color: #ffffff !important;
+        }
+
+        .section-title {
+            color: #ffffff !important;
+            border-left: 3px solid #3b82f6 !important;
+            padding-left: 10px !important;
+        }
+
+        .step-index {
+            background: rgba(59, 130, 246, 0.15) !important;
+            color: #60a5fa !important;
+            padding: 2px 10px !important;
+            border-radius: 6px !important;
+        }
+
+        .step h3 {
+            color: #f1f5f9 !important;
+        }
+
+        .step p {
+            color: #94a3b8 !important;
+        }
+
+        /* Files & Tables */
+        .latest-file {
+            background: #111827 !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .latest-file span {
+            color: #94a3b8 !important;
+        }
+
+        .latest-file strong {
+            color: #f8fafc !important;
+        }
+
+        .file-list-header {
+            color: #94a3b8 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .file-list-name {
+            color: #f8fafc !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .file-list-time {
+            color: #94a3b8 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        /* Form Inputs */
+        [data-testid="stTextInput"] input {
+            background: #0f172a !important;
+            color: #f8fafc !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+        }
+
+        [data-testid="stTextInput"] input:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+        }
+
+        [data-testid="stTextInput"] label {
+            color: #e2e8f0 !important;
+        }
+
+        .auth-header-centered h1 {
+            color: #60a5fa !important;
+        }
+
+        .auth-header-centered p {
+            color: #94a3b8 !important;
+        }
+
+        /* Sidebar overrides */
+        [data-testid="stSidebar"] {
+            background: #070a11 !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -114,7 +269,7 @@ load_css()
 
 # Dark mode (UI only)
 if "dark_mode" not in st.session_state:
-    st.session_state["dark_mode"] = False
+    st.session_state["dark_mode"] = True
 
 dark_mode = st.sidebar.toggle("Dark mode", value=st.session_state["dark_mode"], help="Toggle dark theme")
 st.session_state["dark_mode"] = dark_mode

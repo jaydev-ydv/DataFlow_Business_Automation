@@ -3,3 +3,5 @@ pandas
 plotly
 requests
 openpyxl==3.1.2
+python-dotenv
+

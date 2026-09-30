@@ -184,11 +184,13 @@ def apply_dark_mode(dark_mode: bool):
             color: #e2e8f0 !important;
         }
 
-        .auth-header-centered h1 {
-            color: #60a5fa !important;
+        .auth-card-header h1 {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.02em !important;
         }
 
-        .auth-header-centered p {
+        .auth-card-header p {
             color: #94a3b8 !important;
         }
 

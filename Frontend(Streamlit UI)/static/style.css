@@ -320,83 +320,76 @@ h3 {
 }
 
 .auth-wrapper {
-    max-width: 520px;
-    margin: 40px auto;
-    padding: 0 20px;
+    max-width: 480px;
+    margin: 24px auto;
+    padding: 0 16px;
 }
 
-.auth-header-centered {
+.auth-card-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 
-.auth-header-centered .eyebrow {
-    font-size: 1.6rem;
-    font-weight: 850;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: linear-gradient(90deg, #1f6feb, #f43f5e);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: #1f6feb;
-    display: block;
-    text-align: center;
-    margin-bottom: 12px;
+.auth-logo-badge {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 16px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.15));
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #38bdf8;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
 }
 
-.auth-header-centered h1 {
-    font-size: 2.85rem;
-    font-weight: 900;
-    line-height: 1.15;
-    margin: 0 0 12px;
-    color: #1e3a8a; /* High contrast dark blue fallback for light mode */
-    background: linear-gradient(135deg, #2563eb 0%, #ec4899 50%, #f59e0b 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+.auth-card-header h1 {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
 }
 
-.auth-header-centered p {
-    color: var(--ink);
-    font-size: 1.05rem;
-    line-height: 1.55;
+.auth-card-header p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    line-height: 1.5;
     margin: 0;
-    opacity: 0.85;
-}
-
-.auth-form-title {
-    margin: 0 0 20px;
-    font-size: 1.55rem;
-    font-weight: 900;
-    text-align: center;
-    background: linear-gradient(135deg, #1f6feb, #ec4899);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: #1f6feb;
 }
 
 /* Custom Auth Form Card */
 div[data-testid="stForm"] {
-    background: var(--auth-bg) !important;
-    border: 1px solid var(--auth-border) !important;
+    background: #111827 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 16px !important;
-    padding: 2.25rem !important;
-    box-shadow: var(--auth-shadow) !important;
+    padding: 2rem 2.2rem !important;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45) !important;
     position: relative;
     overflow: hidden;
 }
 
-/* Glowing top border bar on the card */
+/* Elegant top accent bar */
 div[data-testid="stForm"]::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 5px;
-    background: linear-gradient(90deg, #1f6feb, #ec4899, #f43f5e);
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4, #10b981);
+}
+
+.auth-switch-prompt {
+    text-align: center;
+    margin-top: 18px;
+    margin-bottom: 8px;
+}
+
+.auth-switch-prompt span {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .latest-file {
@@ -493,21 +486,21 @@ div[data-testid="stForm"]::before {
 
 [data-testid="stFormSubmitButton"] button {
     border-radius: 10px !important;
-    border: none !important;
-    background: linear-gradient(135deg, #1f6feb, #ec4899) !important;
-    color: white !important;
+    border: 1px solid rgba(59, 130, 246, 0.5) !important;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
     padding: 12px 24px !important;
-    box-shadow: 0 10px 20px -5px rgba(31, 111, 235, 0.3) !important;
-    transition: all 0.25s ease !important;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35) !important;
+    transition: all 0.2s ease !important;
     width: 100% !important;
     cursor: pointer !important;
 }
 
 [data-testid="stFormSubmitButton"] button:hover {
-    background: linear-gradient(135deg, #1d4ed8, #d03d84) !important;
-    box-shadow: 0 12px 25px -5px rgba(236, 72, 153, 0.4) !important;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.5) !important;
     transform: translateY(-2px) !important;
 }
 

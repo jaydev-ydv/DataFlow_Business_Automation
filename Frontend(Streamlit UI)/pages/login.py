@@ -19,13 +19,16 @@ def show_login_page():
 
     st.markdown(
         """
-        <section class="auth-header-centered">
-            <p class="eyebrow">Welcome back</p>
-            <h1>Login to your workspace</h1>
-            <p>
-                Access your uploaded files, history, and visualizations.
-            </p>
-        </section>
+        <div class="auth-card-header">
+            <div class="auth-logo-badge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </div>
+            <h1>Welcome back</h1>
+            <p>Enter your credentials to access your business datasets</p>
+        </div>
         """,
         unsafe_allow_html=True,
     )
@@ -33,29 +36,29 @@ def show_login_page():
     _, form_col, _ = st.columns([1, 1.8, 1])
 
     with form_col:
-        st.markdown('<div class="auth-form-title">Account Access</div>', unsafe_allow_html=True)
         with st.form("login_form"):
             email = st.text_input(
                 "Email address",
-                placeholder="Enter your registered email, e.g. alex@company.com",
+                placeholder="name@company.com",
             )
             password = st.text_input(
                 "Password",
                 type="password",
-                placeholder="Enter your account password",
+                placeholder="••••••••••••",
             )
-            submitted = st.form_submit_button("Login", use_container_width=True)
+            submitted = st.form_submit_button("Sign In", use_container_width=True)
 
         st.markdown(
             """
-            <div style="text-align: center; margin-top: 1.25rem;">
-                <span style="color: var(--ink); font-size: 0.95rem; font-weight: 500;">
-                    New here? Open <strong style="color: #1f6feb; font-weight: 700;">Signup</strong> from the sidebar.
-                </span>
+            <div class="auth-switch-prompt">
+                <span>Don't have an account?</span>
             </div>
             """,
             unsafe_allow_html=True,
         )
+        if st.button("Create new account", key="switch_to_signup", use_container_width=True, type="secondary"):
+            st.session_state["current_page"] = "Signup"
+            st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)
 
